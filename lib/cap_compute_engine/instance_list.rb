@@ -19,7 +19,17 @@ module CapComputeEngine
     end
 
     def with_tag(tag_name)
-      @instances.select { |ins| ins.has_tag?(tag_name) }
+      list = InstanceList.new
+      list.instances = @instances.select { |ins| ins.has_tag?(tag_name) }
+      list
+    end
+
+    def external_ips
+      @instances.map(&:external_ip)
+    end
+
+    def authorize_cloud_sql(name)
+      `gcloud sql instances patch #{name} --authorized-networks "#{external_ips.join(',')}"`
     end
   end
 end
