@@ -2,26 +2,19 @@ require 'cap_compute_engine/instance'
 
 module CapComputeEngine
   class InstanceList
-    def initialize(*args)
-      @instances = []
+    def initialize(instances = [])
+      @instances = instances
     end
 
-    def get
+    def self.get
       json = `gcloud compute instances list --format json`
 
-      list = JSON.parse(json)
-
-      list.each do |instance_hash|
-        @instances << Instance.new(instance_hash)
-      end
-
-      self
+      array = JSON.parse(json)
+      InstanceList.new(array.map { |instance_hash| Instance.new(instance_hash) })
     end
 
     def with_tag(tag_name)
-      list = InstanceList.new
-      list.instances = @instances.select { |ins| ins.has_tag?(tag_name) }
-      list
+      InstanceList.new(@instances.select { |ins| ins.has_tag?(tag_name) })
     end
 
     def external_ips
