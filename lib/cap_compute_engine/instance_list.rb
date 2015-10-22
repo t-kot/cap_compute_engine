@@ -18,7 +18,7 @@ module CapComputeEngine
     end
 
     def external_ips
-      @instances.map(&:external_ip)
+      @instances.map(&:external_ip).compact
     end
 
     def authorize_cloud_sql(name)
